@@ -80,3 +80,13 @@ def simple_hierarchy_test():
     s = Service(service_simple_hierarchy)
     value = 'silly walk'
     assert s.call('example.echo', value) == value
+    
+    
+def simple_hierarchy_deeper_test():
+    """
+    Again checking we can call a simple nested method but this time
+    a little deeper.
+    """
+    s = Service(service_simple_hierarchy)
+    value = 'silly walk'
+    assert s.call('example.foo.bar.echo', value) == value
