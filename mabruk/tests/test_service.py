@@ -1,4 +1,6 @@
-from nose.tools import *
+"""Tests of the service wrapper implementation"""
+
+from nose.tools import raises
 
 from mabruk.service import Service, MethodNotFound
 
@@ -11,37 +13,70 @@ from mabruk.tests.mock import (
 )
 
 @raises(ValueError)
-def create_with_missing_handler_test():
+def create_missing_handler_test():
+    """
+    Check that an appropriate error is raised when a 
+    service is instantiated with a module that does
+    not contain a handler object.
+    """
     Service(bad_service_missing_handler)
     
 @raises(TypeError)
-def create_with_wrong_handler_test():
+def create_wrong_handler_test():
+    """
+    Check that an appropriate error is raised when a 
+    service is instantiated with a module that does
+    not contain a handler object that is an instance of Handler.
+    """
     Service(bad_service_wrong_handler)
     
 def create_simple_test():
+    """
+    Check that we can instantiate a service with a simplest
+    possible module and call a service method.
+    """
     s = Service(service_addition)
     assert s.call('add', 1, 1) == 2
     
 @raises(MethodNotFound)
 def method_not_found_test():
+    """
+    Check that an appropriate error is raised when
+    attempting to call an undefined method.
+    """
     s = Service(service_addition)
     s.call('subtract', 5, 2)
     
 @raises(MethodNotFound)
-def accessing_hidden_methods_test():
+def access_hidden_methods_test():
     s = Service(service_addition)
     s.call('__class__', 5, 2)
     
 @raises(ValueError)
 def junk_method_name_test():
+    """
+    Check that an appropriate error is raised when
+    attempting to call a method using junk.
+    """
     s = Service(service_addition)
     s.call(42)
     
-def simple_handler_hierarchy_test():
+@raises(TypeError)
+def nested_wrong_handler_test():
+    """
+    Check that an appropriate error is raised when
+    attempting to instantiate a service with a module
+    that contains handler with a child that is not an
+    instance of Handler
+    """
+    Service(bad_service_wrong_nested_handler)
+    
+def simple_hierarchy_test():
+    """
+    Check that we can instantiate a service with the simplest
+    possible module that implements hierarchy and call a nested
+    method.
+    """
     s = Service(service_simple_hierarchy)
     value = 'silly walk'
     assert s.call('example.echo', value) == value
-    
-@raises(TypeError)
-def create_with_nested_wrong_handler_test():
-    s = Service(bad_service_wrong_nested_handler)
